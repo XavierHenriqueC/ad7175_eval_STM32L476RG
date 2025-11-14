@@ -1,0 +1,11 @@
+../Core/Src/ad7175_driver.c:22:12:spi_txrx	2
+../Core/Src/ad7175_driver.c:30:12:spi_tx	2
+../Core/Src/ad7175_driver.c:38:13:AD7175_ReconfigureSPI	1
+../Core/Src/ad7175_driver.c:51:12:reg_write	1
+../Core/Src/ad7175_driver.c:59:12:reg_read	2
+../Core/Src/ad7175_driver.c:71:6:AD7175_Reset	1
+../Core/Src/ad7175_driver.c:81:12:wait_drdy	4
+../Core/Src/ad7175_driver.c:96:6:AD7175_Init	3
+../Core/Src/ad7175_driver.c:156:9:AD7175_ReadRaw	3
+../Core/Src/ad7175_driver.c:169:10:AD7175_RawUnsigned	1
+../Core/Src/ad7175_driver.c:175:8:AD7175_ConvertToMilliVolts	1
