@@ -19,19 +19,36 @@ static SPI_HandleTypeDef *ad7175_hspi = NULL;
 /* -------------------------------------------------------------------------- */
 /* Low-level SPI helpers                                                      */
 /* -------------------------------------------------------------------------- */
+static inline void small_delay(void)
+{
+    for (volatile int i = 0; i < 50; i++); // ~500 ns
+}
+
 static int spi_txrx(uint8_t *tx, uint8_t *rx, uint16_t n)
 {
     HAL_GPIO_WritePin(AD7175_CS_PORT, AD7175_CS_PIN, GPIO_PIN_RESET);
+    //small_delay(); // tCSS
+
     HAL_StatusTypeDef st = HAL_SPI_TransmitReceive(ad7175_hspi, tx, rx, n, AD7175_SPI_TIMEOUT);
+
+    //small_delay(); // tCSH
     HAL_GPIO_WritePin(AD7175_CS_PORT, AD7175_CS_PIN, GPIO_PIN_SET);
+
+    //small_delay(); // inter-frame delay
     return (st == HAL_OK) ? 0 : -1;
 }
 
 static int spi_tx(uint8_t *tx, uint16_t n)
 {
     HAL_GPIO_WritePin(AD7175_CS_PORT, AD7175_CS_PIN, GPIO_PIN_RESET);
+    //small_delay();
+
     HAL_StatusTypeDef st = HAL_SPI_Transmit(ad7175_hspi, tx, n, AD7175_SPI_TIMEOUT);
+
+    //small_delay();
     HAL_GPIO_WritePin(AD7175_CS_PORT, AD7175_CS_PIN, GPIO_PIN_SET);
+
+    //small_delay();
     return (st == HAL_OK) ? 0 : -1;
 }
 
@@ -90,6 +107,12 @@ static int wait_drdy(uint32_t timeout_ms)
     return -1;
 }
 
+static int ad7175_select_page(uint8_t page)
+{
+    uint8_t comm = (page << 5);  // bits [6:5]
+    return spi_tx(&comm, 1);
+}
+
 /* -------------------------------------------------------------------------- */
 /* Initialization sequence (verified functional)                              */
 /* -------------------------------------------------------------------------- */
@@ -109,7 +132,7 @@ void AD7175_Init(AD7175_Handle_t *hadc, SPI_HandleTypeDef *hspi)
     if ((id_val & 0xFFF0) != 0x0CD0)
         DBG_LOG("⚠️ ID incorreto!\r\n");
 
-
+    small_delay();
     /* IFMODE = 0x0000 */
 	uint8_t ifmode[2] = {0x00, 0x00};
 	reg_write(0x02, ifmode, 2);
@@ -117,6 +140,7 @@ void AD7175_Init(AD7175_Handle_t *hadc, SPI_HandleTypeDef *hspi)
 	reg_read(0x02, ifmode, 2);
 	DBG_PRINTF("IFMODE READBACK = 0x%02X %02X\r\n", ifmode[0], ifmode[1]);
 
+	small_delay();
 	/* ADCMODE = 0x8000: REF_EN=1, modo contínuo, clock interno */
 	uint8_t adcmode[2] = {0x80, 0x00};
 	reg_write(0x01, adcmode, 2);
@@ -124,25 +148,26 @@ void AD7175_Init(AD7175_Handle_t *hadc, SPI_HandleTypeDef *hspi)
 	reg_read(0x01, adcmode, 2);
 	DBG_PRINTF("ADCMODE READBACK = 0x%02X %02X\r\n", adcmode[0], adcmode[1]);
 
+	small_delay();
 	/* SETUPCON0: */
-//	uint8_t setup0[2] = { 0x13, 0x00 }; //BIPOLAR
-
 	uint8_t setup0[2] = { 0x03, 0x00 };   // 0x0300
 	reg_write(0x20, setup0, 2);
 
 	reg_read(0x20, setup0, 2);
 	DBG_PRINTF("SETUPCON0 READBACK = 0x%02X %02X\r\n", setup0[0], setup0[1]);
 
-
+	small_delay();
 	/* FILTCON0: */
+	ad7175_select_page(2); // page 2
 	uint8_t filt0[2] = { 0x05, 0x11 };
 	reg_write(0x28, filt0, 2);
-
 
 	reg_read(0x28, filt0, 2);
 	DBG_PRINTF("FILTCON0 READBACK = 0x%02X %02X\r\n", filt0[0], filt0[1]);
 
+	small_delay();
 	/* CHMAP0 = 0x8001 (enable CH0, AIN0+/AIN1−, setup0) */
+	ad7175_select_page(1); // page 1
 	uint8_t ch0[2] = {0x80, 0x01};
 	reg_write(0x10, ch0, 2);
 
