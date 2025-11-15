@@ -5,7 +5,7 @@
 ../Core/Src/ad7175_driver.c:59:12:reg_read	32	static
 ../Core/Src/ad7175_driver.c:71:6:AD7175_Reset	16	static
 ../Core/Src/ad7175_driver.c:81:12:wait_drdy	24	static
-../Core/Src/ad7175_driver.c:96:6:AD7175_Init	176	static
-../Core/Src/ad7175_driver.c:156:9:AD7175_ReadRaw	32	static
-../Core/Src/ad7175_driver.c:169:10:AD7175_RawUnsigned	16	static
-../Core/Src/ad7175_driver.c:175:8:AD7175_ConvertToMilliVolts	32	static
+../Core/Src/ad7175_driver.c:96:6:AD7175_Init	208	static
+../Core/Src/ad7175_driver.c:159:9:AD7175_ReadRaw	32	static
+../Core/Src/ad7175_driver.c:172:10:AD7175_RawUnsigned	16	static
+../Core/Src/ad7175_driver.c:178:8:AD7175_ConvertToMilliVolts	32	static

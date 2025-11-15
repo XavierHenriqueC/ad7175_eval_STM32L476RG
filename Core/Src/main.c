@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------------------- */
 /* main.c – Leitura AD7175-2 via SPI2 + CSV na USART2                         */
-/* Autor: Henrique (ajustado por ChatGPT)                                     */
+/* Autor: Henrique Xavier                                     */
 /* -------------------------------------------------------------------------- */
 
 #include "main.h"

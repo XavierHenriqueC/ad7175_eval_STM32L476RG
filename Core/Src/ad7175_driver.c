@@ -11,7 +11,7 @@ extern void Error_Handler(void);
 /* SPI config */
 #define AD7175_SPI_TIMEOUT   1000
 #define AD7175_BAUDRATE_DIV  SPI_BAUDRATEPRESCALER_64
-#define AD7175_RESET_MS_DELAY 10
+#define AD7175_RESET_MS_DELAY 500
 
 /* SPI reference */
 static SPI_HandleTypeDef *ad7175_hspi = NULL;
@@ -114,38 +114,41 @@ void AD7175_Init(AD7175_Handle_t *hadc, SPI_HandleTypeDef *hspi)
 	uint8_t ifmode[2] = {0x00, 0x00};
 	reg_write(0x02, ifmode, 2);
 
+	reg_read(0x02, ifmode, 2);
+	DBG_PRINTF("IFMODE READBACK = 0x%02X %02X\r\n", ifmode[0], ifmode[1]);
+
 	/* ADCMODE = 0x8000: REF_EN=1, modo contínuo, clock interno */
 	uint8_t adcmode[2] = {0x80, 0x00};
 	reg_write(0x01, adcmode, 2);
 
-	/* SETUPCON0:
-	 * - Bipolar, offset binary
-	 * - Buffers de entrada AIN+ / AIN- ligados
-	 * - Referência externa (REF+ / REF-)
-	 *
-	 * Bits (Tabela SETUPCON0):
-	 *  [15:8] = 0b0001 0011 = 0x13
-	 *           BI_UNIPOLAR0 = 1 (bipolar, offset binary)
-	 *           AINBUF0+ = 1, AINBUF0- = 1
-	 *           REFBUF0+/- = 0 (ref sem buffer, ok para começar)
-	 *  [7:0]  = 0b0000 0000 = 0x00
-	 *           BURNOUT_EN0 = 0
-	 *           REF_SEL0 = 00 (referência externa)
-	 */
-	uint8_t setup0[2] = { 0x13, 0x00 };
+	reg_read(0x01, adcmode, 2);
+	DBG_PRINTF("ADCMODE READBACK = 0x%02X %02X\r\n", adcmode[0], adcmode[1]);
+
+	/* SETUPCON0: */
+//	uint8_t setup0[2] = { 0x13, 0x00 }; //BIPOLAR
+
+	uint8_t setup0[2] = { 0x03, 0x00 };   // 0x0300
 	reg_write(0x20, setup0, 2);
 
-	/* FILTCON0:
-	 * - filtro Sinc5+Sinc1 (ORDER0 = 00)
-	 * - ODR0 = 0b10001 = 0x11 -> ~20 SPS
-	 * - ENHFILTEN0/ENHFILT0 mantém valor default (0x05xx)
-	 */
+	reg_read(0x20, setup0, 2);
+	DBG_PRINTF("SETUPCON0 READBACK = 0x%02X %02X\r\n", setup0[0], setup0[1]);
+
+
+	/* FILTCON0: */
 	uint8_t filt0[2] = { 0x05, 0x11 };
 	reg_write(0x28, filt0, 2);
+
+
+	reg_read(0x28, filt0, 2);
+	DBG_PRINTF("FILTCON0 READBACK = 0x%02X %02X\r\n", filt0[0], filt0[1]);
 
 	/* CHMAP0 = 0x8001 (enable CH0, AIN0+/AIN1−, setup0) */
 	uint8_t ch0[2] = {0x80, 0x01};
 	reg_write(0x10, ch0, 2);
+
+	reg_read(0x10, ch0, 2);
+	DBG_PRINTF("CHMAP0 READBACK = 0x%02X %02X\r\n", ch0[0], ch0[1]);
+
 
     DBG_LOG("✅ AD7175 configurado (AIN0+/AIN1−, ref=5V, 20SPS)\r\n");
 }
@@ -174,10 +177,7 @@ uint32_t AD7175_RawUnsigned(uint32_t raw)
 
 double AD7175_ConvertToMilliVolts(uint32_t raw)
 {
-    /* raw: 24 bits em offset binary bipolar */
-    int32_t signed_val = (int32_t)(raw & 0xFFFFFF) - 0x800000;  // -2^23 .. +2^23-1
-
-    /* full-scale bipolar é ±Vref => denom = 0x7FFFFF */
-    double v = ((double)signed_val / 8388607.0) * AD7175_VREF_MV;
+    uint32_t code = raw & 0xFFFFFF;          // 0 .. 16777215
+    double v = ((double)code / 16777215.0) * AD7175_VREF_MV;  // 0 .. Vref
     return v;
 }

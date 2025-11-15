@@ -10,7 +10,7 @@
 /* -------------------------------------------------------------------------- */
 
 /* Valor da referência externa (REF+ − REF−) em mV */
-#define AD7175_VREF_MV   5000.0    // 5.000 V
+#define AD7175_VREF_MV   5000.0
 
 /* Pino de CS do AD7175 (configure conforme seu hardware) */
 #ifndef AD7175_CS_PORT
