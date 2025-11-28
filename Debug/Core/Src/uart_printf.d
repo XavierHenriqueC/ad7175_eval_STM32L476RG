@@ -1,5 +1,5 @@
-Core/Src/ad7175_driver.o: ../Core/Src/ad7175_driver.c \
- ../Core/Inc/ad7175_driver.h \
+Core/Src/uart_printf.o: ../Core/Src/uart_printf.c \
+ ../Core/Inc/uart_printf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -28,8 +28,8 @@ Core/Src/ad7175_driver.o: ../Core/Src/ad7175_driver.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
- ../Core/Inc/uart_printf.h
-../Core/Inc/ad7175_driver.h:
+ ../Core/Inc/main.h
+../Core/Inc/uart_printf.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h:
@@ -58,4 +58,4 @@ Core/Src/ad7175_driver.o: ../Core/Src/ad7175_driver.c \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
-../Core/Inc/uart_printf.h:
+../Core/Inc/main.h:
