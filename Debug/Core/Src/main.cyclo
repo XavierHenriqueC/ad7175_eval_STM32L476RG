@@ -1,6 +1,7 @@
 ../Core/Inc/ad7175_driver.h:41:24:AD7175_RawUnsigned	1
 ../Core/Src/main.c:10:13:dwt_init	1
 ../Core/Src/main.c:17:17:micros	1
-../Core/Src/main.c:23:5:main	5
-../Core/Src/main.c:73:6:SystemClock_Config	4
-../Core/Src/main.c:126:6:Error_Handler	1
+../Core/Src/main.c:23:17:micros32	1
+../Core/Src/main.c:29:5:main	5
+../Core/Src/main.c:76:6:SystemClock_Config	4
+../Core/Src/main.c:129:6:Error_Handler	1

@@ -16,9 +16,15 @@ static void dwt_init(void)
 
 static uint32_t micros(void)
 {
-    uint32_t hclk = HAL_RCC_GetHCLKFreq();
-    return DWT->CYCCNT / (hclk / 1000000U);
+	uint32_t hclk = HAL_RCC_GetHCLKFreq();
+	return DWT->CYCCNT / (hclk / 1000000U);
 }
+
+static uint32_t micros32(void)
+{
+    return DWT->CYCCNT / (HAL_RCC_GetHCLKFreq() / 1000000U);
+}
+
 
 int main(void)
 {
@@ -35,7 +41,7 @@ int main(void)
     AD7175_Handle_t hadc;
     AD7175_Init(&hadc, &hspi2);
 
-    uart_printf("t_us,chan,raw_dec,raw_hex,mV");
+    uart_printf("t_us,chan,raw_dec,mV");
 
     while (1)
     {
@@ -44,9 +50,8 @@ int main(void)
         int r = AD7175_PollAndRead(500, &ch, &raw);
         if (r == 0) {
             double mv = AD7175_ConvertToMilliVolts(raw);
-            uart_printf("%lu,%u,%lu,0x%06lX,%.6f",
+            uart_printf("%lu,%u,%lu,%.6f",
                        (unsigned long)micros(), (unsigned)ch,
-                       (unsigned long)AD7175_RawUnsigned(raw),
                        (unsigned long)AD7175_RawUnsigned(raw),
                        mv);
         } else if (r == -1) {
@@ -56,8 +61,6 @@ int main(void)
         } else if (r == -3) {
             uart_printf("ERR_POLL -3 (ADC_ERROR)");
         }
-        /* small sleep to avoid extreme CPU usage; removal is possible if needed */
-        HAL_Delay(1);
     }
 }
 
